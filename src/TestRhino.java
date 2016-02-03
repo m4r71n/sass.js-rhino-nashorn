@@ -30,9 +30,10 @@ import java.io.Reader;
 public class TestRhino {
 
     private static final String SHIMS = "rhino-shims.js";
-    private static final String SASS = "sass.sync.js";
+    private static final String SASS = "test-safe-split-memory_sass.sync.js";
 
     public static void main(String[] args) throws IOException {
+        final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
 
         final Context context = Context.enter();
         context.setOptimizationLevel(-1);
@@ -41,10 +42,10 @@ public class TestRhino {
 
         final Scriptable globalScope = context.initStandardObjects();
 
-        final Reader shimsReader = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(SHIMS));
+        final Reader shimsReader = new InputStreamReader(contextClassLoader.getResourceAsStream(SHIMS));
         context.evaluateReader(globalScope, shimsReader, SHIMS, 1, null);
 
-        final Reader sassSyncJsReader = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(SASS));
+        final Reader sassSyncJsReader = new InputStreamReader(contextClassLoader.getResourceAsStream(SASS));
         context.evaluateReader(globalScope, sassSyncJsReader, SASS, 1, null);
 
         final String sass = "var scss = '$someVar: 123px; .some-selector { width: $someVar; }';\n" +
